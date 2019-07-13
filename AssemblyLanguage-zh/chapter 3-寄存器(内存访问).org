@@ -1,36 +1,36 @@
-*$A5ZH}UB(B $A<D4fFw#(DZ4f7CNJ#)(B
+﻿* 第三章 寄存器（内存访问）
 
-** $ADZ4fVPWV5D4f4"(B
+** 内存中字的存储
    
-   - $APTVJ#:(B
-      $AHN:NA=8v5XV7A,Px5DDZ4f5%T*#,(BN$A:E5%T*:M(BN+1$A:E5%T*#,?IRT=+K|CG?43IA=8vDZ4f5%T*#;(B
-      $AR2?IRT=+K|CGR;8v5XV7N*(BN$A5DWV5%T*VP5D8_N;WV=Z5%T*:M5MN;WV=Z5%T*(B
+   - 性质：
+      任何两个地址连续的内存单元，N号单元和N+1号单元，可以将它们看成两个内存单元；
+      也可以将它们一个地址为N的字单元中的高位字节单元和低位字节单元
 
 
-** DS$A:M(B[address]
-   1. $A6N<D4fFw(B - DS
-      $AM(3#SC@44f7ER*7CNJ5DJ}>]5D6N5XV7(B
+** DS和[address]
+   1. 段寄存器 - DS
+      通常用来存放要访问的数据的段地址
       
-   2. $A<D4fFw4SDZ4f5%T*VP6AH!J}>](B
-      - mov$AV8An(B:
-        =mov $A<D4fFwC{#,DZ4f5XV7(B=
-        [address]$A1mJ>R;8vF+RF5XV7N*(Baddress$A5DDZ4f5%T*(B
+   2. 寄存器从内存单元中读取数据
+      - mov指令:
+        =mov 寄存器名，内存地址=
+        [address]表示一个偏移地址为address的内存单元
         
       - demo
-         $A=+(B10000H$A#((B1000$A#:(B0$A#)5%T*5DDZH]6AH!5=(Bal$AVP#:(B
+         将10000H（1000：0）单元的内容读取到al中：
          #+BEGIN_SRC 
            mov bx,1000H
            mov ds,bx
-           mov al,[0] // $A=+F+RF5XV7N*(B0 $A5DDZ4fJ}>]4fHk5=(BAL$AVP(B
+           mov al,[0] // 将偏移地址为0 的内存数据存入到AL中
          #+END_SRC
 
-   3. $A<D4fFwOrDZ4f5%T*VPP4HkJ}>](B
-      - mov $AV8An(B
-        =mov $ADZ4f5XV7#,<D4fFwC{(B=
-        [address]$A1mJ>R;8vF+RF5XV7N*(Baddress$A5DDZ4f5%T*(B
+   3. 寄存器向内存单元中写入数据
+      - mov 指令
+        =mov 内存地址，寄存器名=
+        [address]表示一个偏移地址为address的内存单元
      
       - demo
-        $A=+(BAL$AVP5DJ}>]P4HkVADZ4f5%T*(B10000H$A#((B10000H:0)
+        将AL中的数据写入至内存单元10000H（10000H:0)
         #+BEGIN_SRC 
           mov bx,1000H
           mov ds,bx
@@ -38,38 +38,38 @@
         #+END_SRC
 
    4. tip         
-       8086$A<D4fFw2;V'3V=+J}>]V1=S4f7EV.6N<D4fFw5D2YWw#,Hg(B
+       8086寄存器不支持将数据直接存放之段寄存器的操作，如
        #+BEGIN_SRC 
-         mov ds,1000H //$A7G7(2YWw(B
+         mov ds,1000H //非法操作
        #+END_SRC
-       $A1XPkOH=+J}>]4f7EVAM(SC<D4fFw#,TY=+M(SC<D4fFwVP5DJ}>]4f7EVA6N<D4fFw#;(B
-       $A<4(B *$AJ}>](B=>$AM(SC<D4fFw(B=>$A6N<D4fFw(B* $A!#Hg#:(B
+       必须先将数据存放至通用寄存器，再将通用寄存器中的数据存放至段寄存器；
+       即 *数据=>通用寄存器=>段寄存器* 。如：
        #+BEGIN_SRC 
          mov bx,1000H
          mov ds,bx
        #+END_SRC
 
 
-** $A!.WV!/5D4+KM(B
-   $ARrN*(B8086CPU$AJG(B16$AN;=a99#,SP(B16$AN;J}>]O_#,KyRT#,?IRTR;4NPT4+KM(B16$AN;5DJ}>]#,<4R;4NPT4+KMR;8v!.WV(B'
+** ‘字’的传送
+   因为8086CPU是16位结构，有16位数据线，所以，可以一次性传送16位的数据，即一次性传送一个‘字'
    - tip
-     $ATZDZ4f5%T*:M<D4fFwV.<d4+KMWV7{PMJ}>]J1#,8_5XV75%T*:M8_(B8$AN;<D4fFw#,5M5XV75%T*:M5M(B8$AN;<D4fFwO`6TS&!#(B
+     在内存单元和寄存器之间传送字符型数据时，高地址单元和高8位寄存器，低地址单元和低8位寄存器相对应。
    - demo
      #+BEGIN_SRC 
        mov bx,1000H 
-       mov ds,bx     //$A;qH!6N5XV7(B
-       mov ax,[0]    //ax$A6AH!(B1000$A#:(B0$A4&WV7{J}>](B
-       mov [0],cx    //$A=+(Bcx$AVP5D(B16$AN;J}>]P4Hk5=(B1000$A#:(B0
+       mov ds,bx     //获取段地址
+       mov ax,[0]    //ax读取1000：0处字符数据
+       mov [0],cx    //将cx中的16位数据写入到1000：0
      #+END_SRC
    
-   - $AJ5QiLb(B
+   - 实验题
      [[./src/3-register-char transmit practice-1.png]]
      
      [[./src/3-register-char transmit practice-2.png]]
      
 
-** mov,add,sub$AV8An(B
-   1. mov - $A83V52YWw7{(B
+** mov,add,sub指令
+   1. mov - 赋值操作符
       |                              |            |
       |------------------------------+------------|
       | mov register,data            | mov ax,6   |
@@ -79,7 +79,7 @@
       | mov segmentRegister,register | mov ds,ax  |
       | mov register,segmentRegister | mov cx,ds |
 
-   2. add - $A<S7(2YWw7{(B
+   2. add - 加法操作符
       | register function     | demo       |
       |-----------------------+------------|
       | add register,data     | add ax,8   |
@@ -87,7 +87,7 @@
       | add register,memory   | add ax,[0] |
       | add memory,register   | add [0],bx |
 
-   3. sub - $A<u7(2YWw7{(B
+   3. sub - 减法操作符
       | register function     | demo       |
       |-----------------------+------------|
       | sub register,data     | sub x,9    |
@@ -96,117 +96,117 @@
       | sub memory,register   | sub [0],bx |
 
 
-** $AJ}>]6N(B 
-   $AW(CE4f4"J}>]5D6N#,@`KFSZ3LPr6N#,6<JGSPLXJbSCM>5D6N(B
+** 数据段 
+   专门存储数据的段，类似于程序段，都是有特殊用途的段
    
    - demo
      [[./src/3-register-data segmentation demo.png]]
 
 
-** $AU;6N(B
-   $AW(CE4f7EU;5D6N(B
+** 栈段
+   专门存放栈的段
    
-   - $AU;(B
-     $A<4(BDSA$AVP5DU;!#(BFILO
+   - 栈
+     即DSA中的栈。FILO
   
-   - SS:SP $A<D4fFw(B
+   - SS:SP 寄存器
 
-** CPU$ALa9)5DU;;zVF(B
+** CPU提供的栈机制
 
-   1. $A8EDn(B
-     $AOV=q5D(BCPU$AVP6<SPU;5DIh<F(B
-     8086CPU$ALa9)O`9X5DV8An@4RTU;5D7"7EJG7CNJDZ4f?U<d(B
-     $AUb1mCw#,;ySZ(B8086CPU$A1`3LJ1#,?IRT=+R;6NDZ4f51WwU;@4J9SC!#(B
+   1. 概念
+     现今的CPU中都有栈的设计
+     8086CPU提供相关的指令来以栈的发放是访问内存空间
+     这表明，基于8086CPU编程时，可以将一段内存当作栈来使用。
 
-   2. SS,SP - $A<D4fFw(B
-     | SS | $A4f7EU;6%(B $A6N5XV75D6N<D4fFw(B |
-     | SP | $A4f7EU;6%(B $AF+RF5XV75D<D4fFw(B |
+   2. SS,SP - 寄存器
+     | SS | 存放栈顶 段地址的段寄存器 |
+     | SP | 存放栈顶 偏移地址的寄存器 |
 
-     - $APTVJ(B
-       $AHNRbJ1?L#,(BSS:SP$AV8OrU;6%T*KX#,(B
-       $ARr4K(BCPU$A5CRTV*5@51G0R*V4PP5DV8AnKyTZN;VC(B
-       $A<4V*5@DD6NDZ4f?U<d1;51WwU;J9SC(B
+     - 性质
+       任意时刻，SS:SP指向栈顶元素，
+       因此CPU得以知道当前要执行的指令所在位置
+       即知道哪段内存空间被当作栈使用
        
-     - $A?UU;U;6%5XV7(B
-       - $APTVJ(B
-         $A51U;N*?UJ1#,U;VPC;SPT*KX#,<42;4fTZU;6%T*KX!#(B
-         $AKyRT(BSS$A#:(BSP$AV;D\V8OrU;5DWn5W2?5%T*OBCf5D5%T*(B
-         $A;r(B *SP=$AWn5W2?5DWV5%T*5DF+RF5XV7(B+2*
+     - 空栈栈顶地址
+       - 性质
+         当栈为空时，栈中没有元素，即不存在栈顶元素。
+         所以SS：SP只能指向栈的最底部单元下面的单元
+         或 *SP=最底部的字单元的偏移地址+2*
               
-       - $A08@}(B
-         $A<YIh(B10000H-1000FH$AUb6NDZ4f?U<dJGU;#,(B
-         $ATr?UU;U;6%N;VCN*(B *SS=10000H,SP=0010H* 
-         $A;r(B
-         $A8CU;VPWn:sR;8vWV5%T*5DU;6%N;VCN*(B *SS=10000H,SP=000EH*
-         $ATr?UU;U;6%N;VCN*(B *SS=10000H,SP-SP+2=00010H*
+       - 案例
+         假设10000H-1000FH这段内存空间是栈，
+         则空栈栈顶位置为 *SS=10000H,SP=0010H* 
+         或
+         该栈中最后一个字单元的栈顶位置为 *SS=10000H,SP=000EH*
+         则空栈栈顶位置为 *SS=10000H,SP-SP+2=00010H*
          
-         - $A7VNv(B
+         - 分析
            [[./src/3-register-empty stack SS SP.png]]
 
-   3. push & pop - $A=xU;:M3vU;V8An(B
+   3. push & pop - 进栈和出栈指令
      | push ax | push the data in register AX to stack                  |
      | pop ax  | get the data from stack top, adn return tu register AX |
-     $A=xU;#,3vU;6<JGRTWVN*5%N;=xPP5D!#(B
+     进栈，出栈都是以字为单位进行的。
 
-     - $A=x3vU;J>RbM<(B
+     - 进出栈示意图
        [[./src/3-register-CPU stack process diagram.png]]
 
-   4. push$AV8An5DV4PP9}3L(B
+   4. push指令的执行过程
      - =push ax=
        1. SP = SP - 2
-       2. $A=+(BAX$AVP5DDZH]KMHk5=(BSS$A#:(BSP$AV8Or5DDZ4f5%T*4&#,(BSS$A#:(BSP$A4KJ1V8OrPBU;6%(B
+       2. 将AX中的内容送入到SS：SP指向的内存单元处，SS：SP此时指向新栈顶
        
-     - $AAw3LM<(B
+     - 流程图
        [[./src/3-register-stack push process.png]]
 
-   5. pop$AV8An5DV4PP9}3L(B
+   5. pop指令的执行过程
      - =pop ax=
-       1. $A=+(BSS$A#:(BSP$AV8Or5DDZ4f5%T*4&5DJ}>]KMHk(BAX$AVP(B
-       2. SP = SP + 2$A#,(B SS$A#:(BSP $AV8Or51G0U;6%OBCf5DT*KX#,<4V8OrPBU;6%(B
-     - $AAw3LM<(B
+       1. 将SS：SP指向的内存单元处的数据送入AX中
+       2. SP = SP + 2， SS：SP 指向当前栈顶下面的元素，即指向新栈顶
+     - 流程图
        [[./src/3-register-stack pop process.png]]
      
      - tip
-       $A3vU;:s#,(BSS$A#:(BSP$AV8OrPB5DU;6%(B1000EH$A#,(Bpop$A2YWwG05DU;6%T*KX#,(B1000CH$A4&5DJ}>]R@H;4fTZ#,(B
-       $A5+JGRQ>-2;TYU;VPAK(B
-       $A51TY4NV4PP(Bpush$A5HHkU;V8An:s#,(BSS$A#:(BSP$ARF6/VA(B1000CH$A#,2"TZ@oCfP4HkPBJ}>]#,828G>IJ}>](B
+       出栈后，SS：SP指向新的栈顶1000EH，pop操作前的栈顶元素，1000CH处的数据依然存在，
+       但是已经不再栈中了
+       当再次执行push等入栈指令后，SS：SP移动至1000CH，并在里面写入新数据，覆盖旧数据
 
        
-** $AU;6%3,=gNJLb(B
-   - $A3,=g(B
+** 栈顶超界问题
+   - 超界
      [[./src/3-register-stack over bound.png]]
    
-   - $A2;D\T==gT-Rr(B
-     $A;a5<VBJ}>]4fH!T==g#,Tl3IJ}>]J9SC;lBR(B
+   - 不能越界原因
+     会导致数据存取越界，造成数据使用混乱
 
-   - $A=b>v7=7((B
-     CPU$AVP4fTZ4f4"U;6%IOO^:MOBO^5D<D4fFw(B
-     $A#(D?G0(B8086CPU$AVP;9N4D\J5OV#)(B
+   - 解决方法
+     CPU中存在存储栈顶上限和下限的寄存器
+     （目前8086CPU中还未能实现）
 
-   - $A3vOVT-Rr(B
-     8086CPU$A9$WwT-@mV;?<BG51G05DGi?v#:(B
-     1. $A51G0U;6%TZ:N4&(B
-     2. $A51G0R*V4PP5DV8AnJGDDR;Lu(B
+   - 出现原因
+     8086CPU工作原理只考虑当前的情况：
+     1. 当前栈顶在何处
+     2. 当前要执行的指令是哪一条
 
 
-** push,pop$AV8An(B
-   - push$A:M(Bpop$AV8An?IRTTZ<D4fFw:MDZ4fV.<d4+KMJ}>](B
-     $AU;?U<dJGDZ4f?U<d5DR;2?7V#,K}V4RbJ&ME?IRTRTR;VVLXJb7=J==xPP7CNJ5D(B $ADZ4f?U<d!#(B
+** push,pop指令
+   - push和pop指令可以在寄存器和内存之间传送数据
+     栈空间是内存空间的一部分，她执意师团可以以一种特殊方式进行访问的 内存空间。
 
-   - $AV8An8qJ=(B
-     $AU;2YWw6<JGRTWVN*5%N;(B
+   - 指令格式
+     栈操作都是以字为单位
 
-     | $AV8AnC{3F(B             | $AChJv(B                         | demo     |
+     | 指令名称             | 描述                         | demo     |
      |----------------------+------------------------------+----------|
-     | push register        | $A=+R;8v<D4fFwVP5DJ}>]HkU;(B     | push ax  |
-     | pop register         | $ASCR;8v<D4fFw=SJU3vU;5DJ}>](B   | pop bx   |
-     | push segmentRegister | $A=+R;8v6N<D4fFwVP5DJ}>]HkU;(B   | push ds  |
-     | pop segmentRegister  | $ASCR;8v6N<D4fFw=SJU3vU;5DJ}>](B | pop es   |
-     | push memory          | $A=+R;8vDZ4f5%T*3v5DWVHkU;(B     | push [0] |
-     | pop memory           | $ASCR;8vDZ4f5%T*=SJU3vU;5DJ}>](B | pop [2]  |
+     | push register        | 将一个寄存器中的数据入栈     | push ax  |
+     | pop register         | 用一个寄存器接收出栈的数据   | pop bx   |
+     | push segmentRegister | 将一个段寄存器中的数据入栈   | push ds  |
+     | pop segmentRegister  | 用一个段寄存器接收出栈的数据 | pop es   |
+     | push memory          | 将一个内存单元出的字入栈     | push [0] |
+     | pop memory           | 用一个内存单元接收出栈的数据 | pop [2]  |
      
-     $AV8AnV4PPJ1#,(BCPU$AR*V*5@DZ4f5%T*5D5XV7#,?IRTTZ(Bpush$A#,(Bpop$AV8AnVP8x3vDZ4f5%T*5DF+RF5XV7#,(B
-     $A6N5XV7TZV8AnV4PPJG#,(BCPU$A?IRT4S6N<D4fFw(BDS$AVPH!5C(B
+     指令执行时，CPU要知道内存单元的地址，可以在push，pop指令中给出内存单元的偏移地址，
+     段地址在指令执行是，CPU可以从段寄存器DS中取得
    
 
 
