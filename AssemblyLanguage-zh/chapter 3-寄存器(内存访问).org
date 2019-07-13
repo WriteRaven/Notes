@@ -1,21 +1,212 @@
 *第三章 寄存器（内存访问）
 
 ** 内存中字的存储
+   
+   - 性质：
+      任何两个地址连续的内存单元，N号单元和N+1号单元，可以将它们看成两个内存单元；
+      也可以将它们一个地址为N的字单元中的高位字节单元和低位字节单元
+
 
 ** DS和[address]
+   1. 段寄存器 - DS
+      通常用来存放要访问的数据的段地址
+      
+   2. 寄存器从内存单元中读取数据
+      - mov指令:
+        =mov 寄存器名，内存地址=
+        [address]表示一个偏移地址为address的内存单元
+        
+      - demo
+         将10000H（1000：0）单元的内容读取到al中：
+         #+BEGIN_SRC 
+           mov bx,1000H
+           mov ds,bx
+           mov al,[0] // 将偏移地址为0 的内存数据存入到AL中
+         #+END_SRC
 
-** 字的传送
+   3. 寄存器向内存单元中写入数据
+      - mov 指令
+        =mov 内存地址，寄存器名=
+        [address]表示一个偏移地址为address的内存单元
+     
+      - demo
+        将AL中的数据写入至内存单元10000H（10000H:0)
+        #+BEGIN_SRC 
+          mov bx,1000H
+          mov ds,bx
+          mov [0],al
+        #+END_SRC
+
+   4. tip         
+       8086寄存器不支持将数据直接存放之段寄存器的操作，如
+       #+BEGIN_SRC 
+         mov ds,1000H //非法操作
+       #+END_SRC
+       必须先将数据存放至通用寄存器，再将通用寄存器中的数据存放至段寄存器；
+       即 *数据=>通用寄存器=>段寄存器* 。如：
+       #+BEGIN_SRC 
+         mov bx,1000H
+         mov ds,bx
+       #+END_SRC
+
+
+** ‘字’的传送
+   因为8086CPU是16位结构，有16位数据线，所以，可以一次性传送16位的数据，即一次性传送一个‘字'
+   - tip
+     在内存单元和寄存器之间传送字符型数据时，高地址单元和高8位寄存器，低地址单元和低8位寄存器相对应。
+   - demo
+     #+BEGIN_SRC 
+       mov bx,1000H 
+       mov ds,bx     //获取段地址
+       mov ax,[0]    //ax读取1000：0处字符数据
+       mov [0],cx    //将cx中的16位数据写入到1000：0
+     #+END_SRC
+   
+   - 实验题
+     [[./src/3-register-char transmit practice-1.png]]
+     
+     [[./src/3-register-char transmit practice-2.png]]
+     
 
 ** mov,add,sub指令
+   1. mov - 赋值操作符
+      |                              |            |
+      |------------------------------+------------|
+      | mov register,data            | mov ax,6   |
+      | mov register,register        | mov bx,ax  |
+      | mov register,memory          | mov ax,[0] |
+      | mov momory,register          | mov [0],bx |
+      | mov segmentRegister,register | mov ds,ax  |
+      | mov register,segmentRegister | mov cx,ds |
+
+   2. add - 加法操作符
+      | register function     | demo       |
+      |-----------------------+------------|
+      | add register,data     | add ax,8   |
+      | add register,register | add ax,bx  |
+      | add register,memory   | add ax,[0] |
+      | add memory,register   | add [0],bx |
+
+   3. sub - 减法操作符
+      | register function     | demo       |
+      |-----------------------+------------|
+      | sub register,data     | sub x,9    |
+      | sub register,register | sub ax,bx  |
+      | sub register,memory   | sub ax,[0] |
+      | sub memory,register   | sub [0],bx |
+
 
 ** 数据段 
+   专门存储数据的段，类似于程序段，都是有特殊用途的段
+   
+   - demo
+     [[./src/3-register-data segmentation demo.png]]
 
-** 栈
+
+** 栈段
+   专门存放栈的段
+   
+   - 栈
+     即DSA中的栈。FILO
+  
+   - SS:SP 寄存器
 
 ** CPU提供的栈机制
 
+   1. 概念
+     现今的CPU中都有栈的设计
+     8086CPU提供相关的指令来以栈的发放是访问内存空间
+     这表明，基于8086CPU编程时，可以将一段内存当作栈来使用。
+
+   2. SS,SP - 寄存器
+     | SS | 存放栈顶 段地址的段寄存器 |
+     | SP | 存放栈顶 偏移地址的寄存器 |
+
+     - 性质
+       任意时刻，SS:SP指向栈顶元素，
+       因此CPU得以知道当前要执行的指令所在位置
+       即知道哪段内存空间被当作栈使用
+       
+     - 空栈栈顶地址
+       - 性质
+         当栈为空时，栈中没有元素，即不存在栈顶元素。
+         所以SS：SP只能指向栈的最底部单元下面的单元
+         或 *SP=最底部的字单元的偏移地址+2*
+              
+       - 案例
+         假设10000H-1000FH这段内存空间是栈，
+         则空栈栈顶位置为 *SS=10000H,SP=0010H* 
+         或
+         该栈中最后一个字单元的栈顶位置为 *SS=10000H,SP=000EH*
+         则空栈栈顶位置为 *SS=10000H,SP-SP+2=00010H*
+         
+         - 分析
+           [[./src/3-register-empty stack SS SP.png]]
+
+   3. push & pop - 进栈和出栈指令
+     | push ax | push the data in register AX to stack                  |
+     | pop ax  | get the data from stack top, adn return tu register AX |
+     进栈，出栈都是以字为单位进行的。
+
+     - 进出栈示意图
+       [[./src/3-register-CPU stack process diagram.png]]
+
+   4. push指令的执行过程
+     - =push ax=
+       1. SP = SP - 2
+       2. 将AX中的内容送入到SS：SP指向的内存单元处，SS：SP此时指向新栈顶
+       
+     - 流程图
+       [[./src/3-register-stack push process.png]]
+
+   5. pop指令的执行过程
+     - =pop ax=
+       1. 将SS：SP指向的内存单元处的数据送入AX中
+       2. SP = SP + 2， SS：SP 指向当前栈顶下面的元素，即指向新栈顶
+     - 流程图
+       [[./src/3-register-stack pop process.png]]
+     
+     - tip
+       出栈后，SS：SP指向新的栈顶1000EH，pop操作前的栈顶元素，1000CH处的数据依然存在，
+       但是已经不再栈中了
+       当再次执行push等入栈指令后，SS：SP移动至1000CH，并在里面写入新数据，覆盖旧数据
+
+       
 ** 栈顶超界问题
+   - 超界
+     [[./src/3-register-stack over bound.png]]
+   
+   - 不能越界原因
+     会导致数据存取越界，造成数据使用混乱
+
+   - 解决方法
+     CPU中存在存储栈顶上限和下限的寄存器
+     （目前8086CPU中还未能实现）
+
+   - 出现原因
+     8086CPU工作原理只考虑当前的情况：
+     1. 当前栈顶在何处
+     2. 当前要执行的指令是哪一条
+
 
 ** push,pop指令
+   - push和pop指令可以在寄存器和内存之间传送数据
+     栈空间是内存空间的一部分，她执意师团可以以一种特殊方式进行访问的 内存空间。
 
-** 栈段
+   - 指令格式
+     栈操作都是以字为单位
+
+     | 指令名称             | 描述                         | demo     |
+     |----------------------+------------------------------+----------|
+     | push register        | 将一个寄存器中的数据入栈     | push ax  |
+     | pop register         | 用一个寄存器接收出栈的数据   | pop bx   |
+     | push segmentRegister | 将一个段寄存器中的数据入栈   | push ds  |
+     | pop segmentRegister  | 用一个段寄存器接收出栈的数据 | pop es   |
+     | push memory          | 将一个内存单元出的字入栈     | push [0] |
+     | pop memory           | 用一个内存单元接收出栈的数据 | pop [2]  |
+     
+     指令执行时，CPU要知道内存单元的地址，可以在push，pop指令中给出内存单元的偏移地址，
+     段地址在指令执行是，CPU可以从段寄存器DS中取得
+   
+
+
