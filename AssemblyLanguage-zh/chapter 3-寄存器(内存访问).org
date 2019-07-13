@@ -1,0 +1,21 @@
+*第三章 寄存器（内存访问）
+
+** 内存中字的存储
+
+** DS和[address]
+
+** 字的传送
+
+** mov,add,sub指令
+
+** 数据段 
+
+** 栈
+
+** CPU提供的栈机制
+
+** 栈顶超界问题
+
+** push,pop指令
+
+** 栈段
