@@ -109,60 +109,17 @@
 	  除主动使用的情形外，其他使用java类的方式都被看作是类的 *被动使用* ，
 	  都不会导致类的 *初始化* 。
         
-      5. demo Conclusion
-       
-           | conclusion                                         | demo  | 说明                                    |   |
-           |----------------------------------------------------+-------+-----------------------------------------+---|
-           | 调用静态字段时，只有定义了该字段的类才会被初始化  | demo1 | 输出MyCHIld1.strP时，先初始化静态代码块 |   |
-           | 一个类初始化时，需要等父类先初始化完成             | demo1 |                                         |   |
-           |                                                    |       |                                         |   |
-
-**** demo
-     * demo1
-	  #+BEGIN_SRC java :classname Test
-                        public class Test {
-                            public static void main(String[] args) {
-                                System.out.println("Hello world!");
-                                System.out.println("++++++++++++out: MyChild1.strP");
-                                System.out.println(MyChild1.strP);
-                                System.out.println("++++++++++++out: MyChild2.strC2");
-                                System.out.println(MyChild2.strC2);
-                                System.out.println("++++++++++++out: MyChild2.strC2");
-                                System.out.println(new MyChild2());
-                            }
-                        }
-
-                        class MyParent1{
-                            public static String strP = "hello , world";
-                            static {
-                               System.out.println("myParent1 static block");
-                            }
-                        }
-                        class MyChild1 extends MyParent1{
-                         static {
-                             System.out.println("myChild1 static block");
-                         }
-                        }
-            class MyChild2 extends MyParent1 {
-                public static String strC2 = "hello, child-2";
-                static{
-                    System.out.println("myCHild2.static");
-                }
-            }
-          #+END_SRC
-          #+RESULTS:
-          | Hello             | world!         |       |
-          | ++++++++++++out:  | MyChild1.strP  |       |
-          | myParent1         | static         | block |
-          | hello             | ,              | world |
-          | ++++++++++++out:  | MyChild2.strC2 |       |
-          | myCHild2.static   |                |       |
-          | hello,            | child-2        |       |
-          | ++++++++++++out:  | MyChild2.strC2 |       |
-          | MyChild2@2a139a55 |                |       |
-
      5. 卸载
 	osgi会使用
+
+*****  demo Conclusion
+      com.writraven.jvm.classload.*
+
+      * 
+
+
+           一个类初始化时，需要等父类先初始化完                                                             
+        
 **** 类加载器 classLoader
      类加载器是实现类加载的程序。
 **** 虚拟机结束生命周期的情形
